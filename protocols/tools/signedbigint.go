@@ -1,8 +1,9 @@
+// Package tools provides utility functions for protocol event parsing.
 package tools
 
 import "math/big"
 
-// DecodeSignedInt256 converts bytes to signed big.Int
+// DecodeSignedInt256 converts a 32-byte slice to a signed big.Int (two's complement).
 func DecodeSignedInt256(data []byte) *big.Int {
 	value := new(big.Int).SetBytes(data)
 
