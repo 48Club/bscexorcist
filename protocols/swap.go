@@ -1,9 +1,9 @@
 package protocols
 
 import (
-	"bscexorcist/protocols/uniswapv2"
-	"bscexorcist/protocols/uniswapv3"
-	"bscexorcist/protocols/uniswapv4"
+	"github.com/48Club/bscexorcist/protocols/uniswapv2"
+	"github.com/48Club/bscexorcist/protocols/uniswapv3"
+	"github.com/48Club/bscexorcist/protocols/uniswapv4"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"

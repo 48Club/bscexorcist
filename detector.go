@@ -1,8 +1,8 @@
 package bscexorcist
 
 import (
-	"bscexorcist/protocols"
 	"fmt"
+	"github.com/48Club/bscexorcist/protocols"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )

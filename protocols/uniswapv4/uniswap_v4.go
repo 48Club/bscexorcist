@@ -1,7 +1,7 @@
 package uniswapv4
 
 import (
-	"bscexorcist/protocols/tools"
+	"github.com/48Club/bscexorcist/protocols/tools"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"

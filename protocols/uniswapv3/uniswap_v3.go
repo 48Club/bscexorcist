@@ -1,7 +1,7 @@
 package uniswapv3
 
 import (
-	"bscexorcist/protocols/tools"
+	"github.com/48Club/bscexorcist/protocols/tools"
 	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 
