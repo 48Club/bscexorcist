@@ -34,26 +34,5 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 
 // hasSandwichPattern checks if swap directions form a sandwich attack pattern.
 func hasSandwichPattern(directions []bool) bool {
-	n := len(directions)
-	if n < 3 {
-		return false
-	}
-
-	// Look for Buy-Buy-Sell or Sell-Sell-Buy patterns
-	for i := 0; i < n-2; i++ {
-		for j := i + 1; j < n-1; j++ {
-			for k := j + 1; k < n; k++ {
-				// Buy-Buy-Sell pattern
-				if directions[i] && directions[j] && !directions[k] {
-					return true
-				}
-				// Sell-Sell-Buy pattern
-				if !directions[i] && !directions[j] && directions[k] {
-					return true
-				}
-			}
-		}
-	}
-
 	return false
 }
