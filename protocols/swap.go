@@ -3,6 +3,7 @@ package protocols
 
 import (
 	"github.com/48Club/bscexorcist/protocols/dodoswap"
+	"github.com/48Club/bscexorcist/protocols/fourmeme"
 	"github.com/48Club/bscexorcist/protocols/uniswapv2"
 	"github.com/48Club/bscexorcist/protocols/uniswapv3"
 	"github.com/48Club/bscexorcist/protocols/uniswapv4"
@@ -37,6 +38,11 @@ var (
 
 	// DODOSwap signature for swap events
 	dodoSwapSignature = common.HexToHash("0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f")
+
+	fourMemeSwapSignatures = map[common.Hash]bool{
+		common.HexToHash("0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942"): true,
+		common.HexToHash("0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19"): true,
+	}
 )
 
 // ParseSwapEvents extracts swap events from a slice of logs for a single transaction.
@@ -60,6 +66,8 @@ func ParseSwapEvents(logs []*types.Log) []SwapEvent {
 			swap = uniswapv4.ParseSwap(log)
 		} else if signature == dodoSwapSignature {
 			swap = dodoswap.ParseSwap(log)
+		} else if fourMemeSwapSignatures[signature] {
+			swap = fourmeme.ParseSwap(log)
 		}
 
 		if swap != nil {
