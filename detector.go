@@ -6,6 +6,14 @@ import (
 	"github.com/48Club/bscexorcist/protocols"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/48Club/bscexorcist/protocols/liquiditychange"
+)
+
+type SwapDirectionOrType int
+const (
+	SwapFrom0To1 SwapDirectionOrType = 1
+	SwapFrom1To0 SwapDirectionOrType = 0
+	LiqChange SwapDirectionOrType = 2
 )
 
 // DetectSandwichForBundle analyzes a bundle of transaction logs to identify potential sandwich attacks.
@@ -16,10 +24,28 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 	}
 
 	poolDirections := make(map[common.Address][]bool)
+
+	poolDirectionsWithLiqType := make(map[common.Address][]SwapDirectionOrType)
+	includeMint := false
+
 	for _, txLogs := range bundleLogs {
 		for _, swap := range protocols.ParseSwapEvents(txLogs) {
 			poolID := swap.PairID()
-			poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
+			// poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
+
+			if _, ok := swap.(*liquiditychange.LiquidityChange); ok {
+				includeMint = true
+				poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], LiqChange)
+			} else {
+				poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
+
+				if swap.IsToken0To1() {
+					poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], SwapFrom0To1)
+				} else {
+					poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], SwapFrom1To0)
+				}
+
+			}
 		}
 	}
 
@@ -29,6 +55,14 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 		}
 	}
 
+	if includeMint {
+		for pool, directions := range poolDirectionsWithLiqType {
+			if hasSandwichPattern2(directions) {
+				return fmt.Errorf("sandwich attack detected on pool: %s", pool.Hex())
+			}
+		}
+	}
+	
 	return nil
 }
 
@@ -49,6 +83,29 @@ func hasSandwichPattern(directions []bool) bool {
 				}
 				// Sell-Sell-Buy pattern
 				if !directions[i] && !directions[j] && directions[k] {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func hasSandwichPattern2(directions []SwapDirectionOrType) bool {
+	n := len(directions)
+	if n < 3 {
+		return false
+	}
+
+	for i := 0; i < n-2; i++ {
+		for j := i + 1; j < n-1; j++ {
+			for k := j + 1; k < n; k++ {
+				// Buy-Mint/Burn-Sell pattern or Sell-Mint/Burn-Buy pattern
+				if directions[i] == SwapFrom0To1 && directions[j] == LiqChange && directions[k] == SwapFrom1To0 {
+					return true
+				}
+				if directions[i] == SwapFrom1To0 && directions[j] == LiqChange && directions[k] == SwapFrom0To1 {
 					return true
 				}
 			}
