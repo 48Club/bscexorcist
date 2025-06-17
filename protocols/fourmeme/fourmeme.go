@@ -8,16 +8,22 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+var (
+	// SwapEventSignatures for FourMemeSwap
+	SwapEventSignatures = map[common.Hash]bool{
+		swapBuySignature:  true,
+		swapSellSignature: true,
+	}
+
+	swapBuySignature  = common.HexToHash("0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942")
+	swapSellSignature = common.HexToHash("0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19")
+)
+
 // FourMemeSwap implements SwapEvent for FourMemeSwap protocol.
 type FourMemeSwap struct {
 	tokenID common.Address
 	buySide bool
 }
-
-var (
-	fourMemeSwapBuySignature  = common.HexToHash("0x7db52723a3b2cdd6164364b3b766e65e540d7be48ffa89582956d8eaebe62942")
-	fourMemeSwapSellSignature = common.HexToHash("0x0a5575b3648bae2210cee56bf33254cc1ddfbc7bf637c0af2ac18b14fb1bae19")
-)
 
 // PairID returns a pseudo-address derived from the first 10 bytes of each token in the pair.
 func (s *FourMemeSwap) PairID() common.Address {
@@ -47,6 +53,6 @@ func ParseSwap(log *types.Log) *FourMemeSwap {
 	}
 	return &FourMemeSwap{
 		tokenID: common.BytesToAddress(log.Data[:32]),
-		buySide: log.Topics[0] == fourMemeSwapBuySignature,
+		buySide: log.Topics[0] == swapBuySignature,
 	}
 }

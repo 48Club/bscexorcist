@@ -4,16 +4,17 @@ package bscexorcist
 import (
 	"fmt"
 	"github.com/48Club/bscexorcist/protocols"
+	"github.com/48Club/bscexorcist/protocols/liquiditychange"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/48Club/bscexorcist/protocols/liquiditychange"
 )
 
 type SwapDirectionOrType int
+
 const (
 	SwapFrom0To1 SwapDirectionOrType = 1
 	SwapFrom1To0 SwapDirectionOrType = 0
-	LiqChange SwapDirectionOrType = 2
+	LiqChange    SwapDirectionOrType = 2
 )
 
 // DetectSandwichForBundle analyzes a bundle of transaction logs to identify potential sandwich attacks.
@@ -62,7 +63,7 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 			}
 		}
 	}
-	
+
 	return nil
 }
 

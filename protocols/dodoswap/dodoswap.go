@@ -8,6 +8,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+// SwapEventSignature for DodoSwap
+var SwapEventSignature = common.HexToHash("0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f")
+
 // DODOSwap implements SwapEvent for DODOSwap protocol.
 type DODOSwap struct {
 	poolID     common.Address

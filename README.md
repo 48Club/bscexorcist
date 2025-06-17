@@ -67,16 +67,16 @@ Builders **MUST** implement sandwich detection before submitting bids:
 
 ## 📊 Supported Protocols
 
-| Protocol       | Status      | Event Signatures                |
-|----------------|-------------|---------------------------------|
-| Uniswap V2     | ✅ Supported | `0xd78ad95f...` `0x606ecd02...` |
-| Uniswap V3     | ✅ Supported | `0xc42079f9...` `0x19b47279...` |
-| Uniswap V4     | ✅ Supported | `0x40e9cecb...`                 |
-| PancakeSwap V2 | ✅ Supported | Compatible                      |
-| PancakeSwap V3 | ✅ Supported | Compatible                      |
-| PancakeSwap V4 | ✅ Supported | Compatible                      |
-| DODOSwap       | ✅ Supported | `0xc2c0245e...`                 |
-| FourMeme       | ✅ Supported | `0x7db52723...` `0x0a5575b3...` |
+| Protocol       | Status      | Event Signatures                            |
+|----------------|-------------|---------------------------------------------|
+| Uniswap V2     | ✅ Supported | `0xd78ad95f...` `0x606ecd02...` `Burn/Mint` |
+| Uniswap V3     | ✅ Supported | `0xc42079f9...` `0x19b47279...` `Burn/Mint` |
+| Uniswap V4     | ✅ Supported | `0x40e9cecb...` `Burn/Mint`                 |
+| PancakeSwap V2 | ✅ Supported | Compatible                                  |
+| PancakeSwap V3 | ✅ Supported | Compatible                                  |
+| PancakeSwap V4 | ✅ Supported | Compatible                                  |
+| DODOSwap       | ✅ Supported | `0xc2c0245e...`                             |
+| FourMeme       | ✅ Supported | `0x7db52723...` `0x0a5575b3...`             |
 
 ## 🔗 Resources
 

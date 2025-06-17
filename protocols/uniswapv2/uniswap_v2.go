@@ -8,6 +8,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+// SwapEventSignatures for Uniswap V2
+var SwapEventSignatures = map[common.Hash]bool{
+	common.HexToHash("0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822"): true,
+	common.HexToHash("0x606ecd02b3e3b4778f8e97b2e03351de14224efaa5fa64e62200afc9395c2499"): true,
+}
+
 // V2Swap implements SwapEvent for Uniswap V2-style pools.
 type V2Swap struct {
 	pool       common.Address

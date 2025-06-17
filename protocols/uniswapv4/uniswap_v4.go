@@ -9,6 +9,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+// SwapEventSignature for Uniswap V4
+var SwapEventSignature = common.HexToHash("0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f")
+
 // V4Swap implements SwapEvent for Uniswap V4-style pools.
 type V4Swap struct {
 	poolID  [32]byte // poolID is a 32-byte identifier for the pool, used as a unique pool identifier
