@@ -24,7 +24,7 @@ func TestMyDetectLiqSandwichForBundle(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "liqTestCase2",
+			name:    "liqTestCase3",
 			logs:    liqTestCase3,
 			wantErr: true,
 		},

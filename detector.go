@@ -57,7 +57,7 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 
 	if includeMint {
 		for pool, directions := range poolDirectionsWithLiqType {
-			if hasSandwichPattern2(directions) {
+			if hasLiquiditySandwichPattern(directions) {
 				return fmt.Errorf("sandwich attack detected on pool: %s", pool.Hex())
 			}
 		}
@@ -92,7 +92,7 @@ func hasSandwichPattern(directions []bool) bool {
 	return false
 }
 
-func hasSandwichPattern2(directions []SwapDirectionOrType) bool {
+func hasLiquiditySandwichPattern(directions []SwapDirectionOrType) bool {
 	n := len(directions)
 	if n < 3 {
 		return false
