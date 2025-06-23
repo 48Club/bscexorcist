@@ -1,18 +1,19 @@
 // Package uniswapv3 provides swap event parsing for Uniswap V3 and compatible protocols.
-package uniswapv3
+package uniswap_v3
 
 import (
-	"github.com/48Club/bscexorcist/protocols/tools"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
+
+	"github.com/48Club/bscexorcist/utils"
+	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
 // SwapEventSignatures for Uniswap V3
 var SwapEventSignatures = map[common.Hash]bool{
-	common.HexToHash("0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67"): true,
-	common.HexToHash("0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83"): true,
+	common.HexToHash("0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67"): true, // uniswap-v3
+	common.HexToHash("0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83"): true, // pancake-swap-v3
 }
 
 // V3Swap implements SwapEvent for Uniswap V3-style pools.
@@ -56,8 +57,8 @@ func ParseSwap(log *types.Log) *V3Swap {
 		return nil
 	}
 
-	amount0 := tools.DecodeSignedInt256(log.Data[:32])
-	amount1 := tools.DecodeSignedInt256(log.Data[32:64])
+	amount0 := utils.DecodeSignedInt256(log.Data[:32])
+	amount1 := utils.DecodeSignedInt256(log.Data[32:64])
 
 	return &V3Swap{
 		pool:       log.Address,

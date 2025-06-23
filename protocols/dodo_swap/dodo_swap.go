@@ -1,9 +1,10 @@
-// Package dodoswap provides swap event parsing for DODOSwap protocols.
-package dodoswap
+// Package dodo_swap provides swap event parsing for DODOSwap protocols.
+package dodo_swap
 
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -20,6 +21,27 @@ type DODOSwap struct {
 	amountTo   *big.Int
 }
 
+// isTokenAFirst checks if token A is less than token B.
+func isTokenAFirst(tkA, tkB common.Address) bool {
+	tokenARep := utils.BigIntFromBytes(tkA.Bytes())
+	tokenBRep := utils.BigIntFromBytes(tkB.Bytes())
+	return tokenARep.Cmp(tokenBRep) < 0
+}
+
+// calcPoolID returns a pseudo-address derived from the first 10 bytes of each sorted tokenFrom/tokenTo.
+func calcPoolID(tkA, tkB common.Address) (pool common.Address) {
+	tokenARep := utils.BigIntFromBytes(tkA.Bytes())
+	tokenBRep := utils.BigIntFromBytes(tkB.Bytes())
+	if tokenARep.Cmp(tokenBRep) < 0 {
+		copy(pool[:], tkA.Bytes()[:10])
+		copy(pool[10:], tkB.Bytes()[:10])
+	} else {
+		copy(pool[:], tkB.Bytes()[:10])
+		copy(pool[10:], tkA.Bytes()[:10])
+	}
+	return pool
+}
+
 // PairID returns a pseudo-address derived from the first 10 bytes of each token in the pair.
 func (s *DODOSwap) PairID() common.Address {
 	return s.poolID
@@ -34,18 +56,18 @@ func (s *DODOSwap) IsToken0To1() bool {
 func (s *DODOSwap) AmountIn() *big.Int {
 	if isTokenAFirst(s.tokenFrom, s.tokenTo) {
 		// tokenFrom is token0, so amountFrom is the input amount
-		return new(big.Int).Set(s.amountFrom)
+		return utils.BigIntFromPointer(s.amountFrom)
 	}
-	return new(big.Int).Set(s.amountTo)
+	return utils.BigIntFromPointer(s.amountTo)
 }
 
 // AmountOut returns the output amount for the swap.
 func (s *DODOSwap) AmountOut() *big.Int {
 	if isTokenAFirst(s.tokenFrom, s.tokenTo) {
 		// tokenFrom is token0, so amountFrom is the input amount
-		return new(big.Int).Set(s.amountTo)
+		return utils.BigIntFromPointer(s.amountTo)
 	}
-	return new(big.Int).Set(s.amountFrom)
+	return utils.BigIntFromPointer(s.amountFrom)
 }
 
 // ParseSwap parses a DODOSwap log into a DODOSwap struct.
@@ -62,29 +84,7 @@ func ParseSwap(log *types.Log) *DODOSwap {
 		poolID:     calcPoolID(fromToken, toToken),
 		tokenFrom:  fromToken,
 		tokenTo:    toToken,
-		amountFrom: new(big.Int).SetBytes(log.Data[64:96]),
-		amountTo:   new(big.Int).SetBytes(log.Data[96:128]),
+		amountFrom: utils.BigIntFromBytes(log.Data[64:96]),
+		amountTo:   utils.BigIntFromBytes(log.Data[96:128]),
 	}
-}
-
-func isTokenAFirst(tkA, tkB common.Address) bool {
-	tokenARep := new(big.Int).SetBytes(tkA.Bytes())
-	tokenBRep := new(big.Int).SetBytes(tkB.Bytes())
-
-	return tokenARep.Cmp(tokenBRep) < 0
-}
-
-// calcPoolID returns a pseudo-address derived from the first 10 bytes of each sorted tokenFrom/tokenTo.
-func calcPoolID(tkA, tkB common.Address) (pool common.Address) {
-	tokenARep := new(big.Int).SetBytes(tkA.Bytes())
-	tokenBRep := new(big.Int).SetBytes(tkB.Bytes())
-	if tokenARep.Cmp(tokenBRep) < 0 {
-		copy(pool[:], tkA.Bytes()[:10])
-		copy(pool[10:], tkB.Bytes()[:10])
-		return pool
-	} else {
-		copy(pool[:], tkB.Bytes()[:10])
-		copy(pool[10:], tkA.Bytes()[:10])
-	}
-	return pool
 }

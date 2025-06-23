@@ -1,16 +1,19 @@
 // Package uniswapv4 provides swap event parsing for Uniswap V4 and compatible protocols.
-package uniswapv4
+package uniswap_v4
 
 import (
-	"github.com/48Club/bscexorcist/protocols/tools"
 	"math/big"
 
+	"github.com/48Club/bscexorcist/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-// SwapEventSignature for Uniswap V4
-var SwapEventSignature = common.HexToHash("0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f")
+// SwapEventSignatures for Uniswap V4
+var SwapEventSignatures = map[common.Hash]bool{
+	common.HexToHash("0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f"): true, // uniswap-v4
+	common.HexToHash("0x04206ad2b7c0f463bff3dd4f33c5735b0f2957a351e4f79763a4fa9e775dd237"): true, // pancake-infinity-cl
+}
 
 // V4Swap implements SwapEvent for Uniswap V4-style pools.
 type V4Swap struct {
@@ -54,15 +57,9 @@ func ParseSwap(log *types.Log) *V4Swap {
 		return nil
 	}
 
-	var poolID [32]byte
-	copy(poolID[:], log.Topics[1].Bytes())
-
-	amount0 := tools.DecodeSignedInt256(log.Data[:32])
-	amount1 := tools.DecodeSignedInt256(log.Data[32:64])
-
 	return &V4Swap{
-		poolID:  poolID,
-		amount0: amount0,
-		amount1: amount1,
+		poolID:  utils.GetBytes32(log.Topics[1].Bytes()),
+		amount0: utils.DecodeSignedInt256(log.Data[:32]),
+		amount1: utils.DecodeSignedInt256(log.Data[32:64]),
 	}
 }

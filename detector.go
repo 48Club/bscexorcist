@@ -3,8 +3,9 @@ package bscexorcist
 
 import (
 	"fmt"
+
 	"github.com/48Club/bscexorcist/protocols"
-	"github.com/48Club/bscexorcist/protocols/liquiditychange"
+	"github.com/48Club/bscexorcist/protocols/liquidity_change"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -34,7 +35,7 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 			poolID := swap.PairID()
 			// poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
 
-			if _, ok := swap.(*liquiditychange.LiquidityChange); ok {
+			if _, ok := swap.(*liquidity_change.LiquidityChange); ok {
 				includeMint = true
 				poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], LiqChange)
 			} else {
@@ -45,7 +46,6 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 				} else {
 					poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], SwapFrom1To0)
 				}
-
 			}
 		}
 	}

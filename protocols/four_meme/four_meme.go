@@ -1,5 +1,5 @@
-// Package fourmeme provides swap event parsing for fourmeme protocols.
-package fourmeme
+// Package four_meme provides swap event parsing for fourmeme protocols.
+package four_meme
 
 import (
 	"math/big"

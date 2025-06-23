@@ -1,10 +1,11 @@
 package bscexorcist
 
 import (
+	"testing"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
-	"testing"
 )
 
 func TestMyDetectLiqSandwichForBundle(t *testing.T) {

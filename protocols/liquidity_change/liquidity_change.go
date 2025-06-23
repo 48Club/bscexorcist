@@ -1,9 +1,10 @@
-// Package liquiditychange provides Mint/Burn event parsing.
-package liquiditychange
+// Package liquidity_change provides Mint/Burn event parsing.
+package liquidity_change
 
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -15,10 +16,11 @@ type LiquidityChange struct {
 
 var (
 	LiquidityChangeSignature = map[common.Hash]bool{
-		uniswapV2MintSignature: true,
-		uniswapV3MintSignature: true,
-		uniswapV2BurnSignature: true,
-		uniswapV3BurnSignature: true,
+		uniswapV2MintSignature:            true,
+		uniswapV3MintSignature:            true,
+		uniswapV2BurnSignature:            true,
+		uniswapV3BurnSignature:            true,
+		uniswapV4ModifyLiquiditySignature: true,
 	}
 
 	// Mint (index_topic_1 address sender, uint256 amount0, uint256 amount1)
@@ -32,6 +34,9 @@ var (
 
 	// Burn (index_topic_1 address owner, index_topic_2 int24 tickLower, index_topic_3 int24 tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
 	uniswapV3BurnSignature = common.HexToHash("0x0c396cd989a39f4459b5fa1aed6a9a8dcdbc45908acfd67e028cd568da98982c")
+
+	// ModifyLiquidity (PoolId id, address sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)
+	uniswapV4ModifyLiquiditySignature = common.HexToHash("0xf208f4912782fd25c7f114ca3723a2d5dd6f3bcc3ac8db5af63baa85f711d5ec")
 )
 
 // PairID returns the pool address.
@@ -61,7 +66,16 @@ func ParseSwap(log *types.Log) *LiquidityChange {
 		return nil
 	}
 
+	var pool common.Address
+	if log.Topics[0] == uniswapV4ModifyLiquiditySignature {
+		// Use the first 20 bytes of poolID as a virtual address
+		id := utils.GetBytes32(log.Topics[1].Bytes())
+		pool = common.BytesToAddress(id[:20])
+	} else {
+		pool = log.Address
+	}
+
 	return &LiquidityChange{
-		pool: log.Address,
+		pool: pool,
 	}
 }

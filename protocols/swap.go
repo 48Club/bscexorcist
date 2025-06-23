@@ -2,15 +2,16 @@
 package protocols
 
 import (
-	"github.com/48Club/bscexorcist/protocols/dodoswap"
-	"github.com/48Club/bscexorcist/protocols/fourmeme"
-	"github.com/48Club/bscexorcist/protocols/liquiditychange"
-	"github.com/48Club/bscexorcist/protocols/uniswapv2"
-	"github.com/48Club/bscexorcist/protocols/uniswapv3"
-	"github.com/48Club/bscexorcist/protocols/uniswapv4"
+	"math/big"
+
+	"github.com/48Club/bscexorcist/protocols/dodo_swap"
+	"github.com/48Club/bscexorcist/protocols/four_meme"
+	"github.com/48Club/bscexorcist/protocols/liquidity_change"
+	"github.com/48Club/bscexorcist/protocols/uniswap_v2"
+	"github.com/48Club/bscexorcist/protocols/uniswap_v3"
+	"github.com/48Club/bscexorcist/protocols/uniswap_v4"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 )
 
 // SwapEvent represents a DEX swap event with a unified interface for all supported protocols.
@@ -31,21 +32,21 @@ func ParseSwapEvents(logs []*types.Log) []SwapEvent {
 			continue
 		}
 
+		var swap SwapEvent
 		signature := log.Topics[0]
 
-		var swap SwapEvent
-		if uniswapv2.SwapEventSignatures[signature] {
-			swap = uniswapv2.ParseSwap(log)
-		} else if uniswapv3.SwapEventSignatures[signature] {
-			swap = uniswapv3.ParseSwap(log)
-		} else if signature == uniswapv4.SwapEventSignature {
-			swap = uniswapv4.ParseSwap(log)
-		} else if signature == dodoswap.SwapEventSignature {
-			swap = dodoswap.ParseSwap(log)
-		} else if fourmeme.SwapEventSignatures[signature] {
-			swap = fourmeme.ParseSwap(log)
-		} else if liquiditychange.LiquidityChangeSignature[signature] {
-			swap = liquiditychange.ParseSwap(log)
+		if uniswap_v2.SwapEventSignatures[signature] {
+			swap = uniswap_v2.ParseSwap(log)
+		} else if uniswap_v3.SwapEventSignatures[signature] {
+			swap = uniswap_v3.ParseSwap(log)
+		} else if uniswap_v4.SwapEventSignatures[signature] {
+			swap = uniswap_v4.ParseSwap(log)
+		} else if signature == dodo_swap.SwapEventSignature {
+			swap = dodo_swap.ParseSwap(log)
+		} else if four_meme.SwapEventSignatures[signature] {
+			swap = four_meme.ParseSwap(log)
+		} else if liquidity_change.LiquidityChangeSignature[signature] {
+			swap = liquidity_change.ParseSwap(log)
 		}
 
 		if swap != nil {
