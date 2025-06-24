@@ -10,7 +10,6 @@ type Addresses [32]byte
 // AddressesB20 creates an Addresses from a 20-byte address (padded to 32 bytes)
 func AddressesB20(addr common.Address) Addresses {
 	var result [32]byte
-	// Copy the 20-byte address to the last 20 bytes (standard Ethereum padding)
 	copy(result[12:], addr[:])
 	return result
 }
@@ -32,9 +31,6 @@ func (a Addresses) IsB20() bool {
 
 // ToB20 converts the address to a common.Address (20 bytes)
 func (a Addresses) ToB20() common.Address {
-	if a.IsB20() {
-		return common.BytesToAddress(a[:])
-	}
 	var addr common.Address
 	copy(addr[:], a[12:])
 	return addr
@@ -43,7 +39,9 @@ func (a Addresses) ToB20() common.Address {
 // ToB32 converts the address to a common.Hash (already 32 bytes)
 func (a Addresses) ToB32() common.Hash {
 	if a.IsB20() {
-		return common.Hash(a[12:])
+		var result [32]byte
+		copy(result[12:], a[12:])
+		return common.Hash(result)
 	}
 	return common.Hash(a)
 }
