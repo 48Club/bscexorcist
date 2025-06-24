@@ -4,9 +4,10 @@ package dodo_swap
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/types"
 	"github.com/48Club/bscexorcist/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 )
 
 // SwapEventSignature for DodoSwap
@@ -43,8 +44,8 @@ func calcPoolID(tkA, tkB common.Address) (pool common.Address) {
 }
 
 // PairID returns a pseudo-address derived from the first 10 bytes of each token in the pair.
-func (s *DODOSwap) PairID() common.Address {
-	return s.poolID
+func (s *DODOSwap) PairID() types.Addresses {
+	return types.AddressesB20(s.poolID)
 }
 
 // IsToken0To1 returns true if the swap direction is token0 -> token1.
@@ -72,7 +73,7 @@ func (s *DODOSwap) AmountOut() *big.Int {
 
 // ParseSwap parses a DODOSwap log into a DODOSwap struct.
 // Returns nil if the log is not a valid swap event.
-func ParseSwap(log *types.Log) *DODOSwap {
+func ParseSwap(log *eth.Log) *DODOSwap {
 	if len(log.Topics) != 1 || len(log.Data) < 128 {
 		return nil
 	}

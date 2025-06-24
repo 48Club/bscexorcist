@@ -4,8 +4,9 @@ package four_meme
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 )
 
 var (
@@ -26,8 +27,8 @@ type FourMemeSwap struct {
 }
 
 // PairID returns a pseudo-address derived from the first 10 bytes of each token in the pair.
-func (s *FourMemeSwap) PairID() common.Address {
-	return s.tokenID
+func (s *FourMemeSwap) PairID() types.Addresses {
+	return types.AddressesB20(s.tokenID)
 }
 
 // IsToken0To1 returns true if the swap direction is token0 -> token1.
@@ -47,7 +48,7 @@ func (s *FourMemeSwap) AmountOut() *big.Int {
 
 // ParseSwap parses a FourmemeSwap log into a FourmemeSwap struct.
 // Returns nil if the log is not a valid swap event.
-func ParseSwap(log *types.Log) *FourMemeSwap {
+func ParseSwap(log *eth.Log) *FourMemeSwap {
 	if len(log.Topics) != 1 || len(log.Data) < 32 {
 		return nil
 	}

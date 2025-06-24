@@ -10,13 +10,13 @@ import (
 	"github.com/48Club/bscexorcist/protocols/uniswap_v2"
 	"github.com/48Club/bscexorcist/protocols/uniswap_v3"
 	"github.com/48Club/bscexorcist/protocols/uniswap_v4"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/48Club/bscexorcist/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 )
 
 // SwapEvent represents a DEX swap event with a unified interface for all supported protocols.
 type SwapEvent interface {
-	PairID() common.Address
+	PairID() types.Addresses
 	IsToken0To1() bool
 	AmountIn() *big.Int
 	AmountOut() *big.Int
@@ -24,7 +24,7 @@ type SwapEvent interface {
 
 // ParseSwapEvents extracts swap events from a slice of logs for a single transaction.
 // Returns a slice of SwapEvent for all recognized swap events in the logs.
-func ParseSwapEvents(logs []*types.Log) []SwapEvent {
+func ParseSwapEvents(logs []*eth.Log) []SwapEvent {
 	var swaps []SwapEvent
 
 	for _, log := range logs {

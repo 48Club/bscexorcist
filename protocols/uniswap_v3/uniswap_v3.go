@@ -4,8 +4,9 @@ package uniswap_v3
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/types"
 	"github.com/48Club/bscexorcist/utils"
-	"github.com/ethereum/go-ethereum/core/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -25,8 +26,8 @@ type V3Swap struct {
 }
 
 // PairID returns the pool address.
-func (s *V3Swap) PairID() common.Address {
-	return s.pool
+func (s *V3Swap) PairID() types.Addresses {
+	return types.AddressesB20(s.pool)
 }
 
 // IsToken0To1 returns true if the swap direction is token0 -> token1.
@@ -52,7 +53,7 @@ func (s *V3Swap) AmountOut() *big.Int {
 
 // ParseSwap parses a Uniswap V3 swap log into a V3Swap struct.
 // Returns nil if the log is not a valid swap event.
-func ParseSwap(log *types.Log) *V3Swap {
+func ParseSwap(log *eth.Log) *V3Swap {
 	if len(log.Data) < 160 {
 		return nil
 	}

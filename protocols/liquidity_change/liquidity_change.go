@@ -4,14 +4,15 @@ package liquidity_change
 import (
 	"math/big"
 
+	"github.com/48Club/bscexorcist/types"
 	"github.com/48Club/bscexorcist/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 )
 
 // LiquidityChange implements SwapEvent for Mint/Burn Event.
 type LiquidityChange struct {
-	pool common.Address
+	pool types.Addresses
 }
 
 var (
@@ -40,7 +41,7 @@ var (
 )
 
 // PairID returns the pool address.
-func (s *LiquidityChange) PairID() common.Address {
+func (s *LiquidityChange) PairID() types.Addresses {
 	return s.pool
 }
 
@@ -61,18 +62,18 @@ func (s *LiquidityChange) AmountOut() *big.Int {
 
 // ParseSwap parses a Mint/Burn log into a LiquidityChange struct.
 // Returns nil if the log is not a valid swap event.
-func ParseSwap(log *types.Log) *LiquidityChange {
+func ParseSwap(log *eth.Log) *LiquidityChange {
 	if len(log.Topics) < 2 || len(log.Data) < 64 {
 		return nil
 	}
 
-	var pool common.Address
+	var pool types.Addresses
 	if log.Topics[0] == uniswapV4ModifyLiquiditySignature {
-		// Use the first 20 bytes of poolID as a virtual address
 		id := utils.GetBytes32(log.Topics[1].Bytes())
-		pool = common.BytesToAddress(id[:20])
+		hash := common.BytesToHash(id[:])
+		pool = types.AddressesB32(hash)
 	} else {
-		pool = log.Address
+		pool = types.AddressesB20(log.Address)
 	}
 
 	return &LiquidityChange{

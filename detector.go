@@ -6,8 +6,8 @@ import (
 
 	"github.com/48Club/bscexorcist/protocols"
 	"github.com/48Club/bscexorcist/protocols/liquidity_change"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/48Club/bscexorcist/types"
+	eth "github.com/ethereum/go-ethereum/core/types"
 )
 
 type SwapDirectionOrType int
@@ -20,31 +20,27 @@ const (
 
 // DetectSandwichForBundle analyzes a bundle of transaction logs to identify potential sandwich attacks.
 // Returns an error if a sandwich pattern is detected in any pool within the bundle.
-func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
+func DetectSandwichForBundle(bundleLogs [][]*eth.Log) error {
 	if len(bundleLogs) < 3 {
 		return nil
 	}
 
-	poolDirections := make(map[common.Address][]bool)
-
-	poolDirectionsWithLiqType := make(map[common.Address][]SwapDirectionOrType)
+	poolDirections := make(map[types.Addresses][]bool)
+	poolDirectionsWithLiqType := make(map[types.Addresses][]SwapDirectionOrType)
 	includeMint := false
 
 	for _, txLogs := range bundleLogs {
 		for _, swap := range protocols.ParseSwapEvents(txLogs) {
-			poolID := swap.PairID()
-			// poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
-
+			id := swap.PairID()
 			if _, ok := swap.(*liquidity_change.LiquidityChange); ok {
+				poolDirectionsWithLiqType[id] = append(poolDirectionsWithLiqType[id], LiqChange)
 				includeMint = true
-				poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], LiqChange)
 			} else {
-				poolDirections[poolID] = append(poolDirections[poolID], swap.IsToken0To1())
-
+				poolDirections[id] = append(poolDirections[id], swap.IsToken0To1())
 				if swap.IsToken0To1() {
-					poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], SwapFrom0To1)
+					poolDirectionsWithLiqType[id] = append(poolDirectionsWithLiqType[id], SwapFrom0To1)
 				} else {
-					poolDirectionsWithLiqType[poolID] = append(poolDirectionsWithLiqType[poolID], SwapFrom1To0)
+					poolDirectionsWithLiqType[id] = append(poolDirectionsWithLiqType[id], SwapFrom1To0)
 				}
 			}
 		}
@@ -52,14 +48,14 @@ func DetectSandwichForBundle(bundleLogs [][]*types.Log) error {
 
 	for pool, directions := range poolDirections {
 		if hasSandwichPattern(directions) {
-			return fmt.Errorf("sandwich attack detected on pool: %s", pool.Hex())
+			return fmt.Errorf("sandwich attack detected on pool: %s", pool.String())
 		}
 	}
 
 	if includeMint {
 		for pool, directions := range poolDirectionsWithLiqType {
 			if hasLiquiditySandwichPattern(directions) {
-				return fmt.Errorf("sandwich attack detected on pool: %s", pool.Hex())
+				return fmt.Errorf("sandwich attack detected on pool: %s", pool.String())
 			}
 		}
 	}
