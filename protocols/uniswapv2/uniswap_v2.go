@@ -2,8 +2,9 @@
 package uniswapv2
 
 import (
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/core/types"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -24,23 +25,30 @@ func (s *V2Swap) PairID() common.Address {
 
 // IsToken0To1 returns true if the swap direction is token0 -> token1.
 func (s *V2Swap) IsToken0To1() bool {
-	return s.amount0In.Cmp(s.amount1In) > 0
+	delta0 := new(big.Int).Sub(s.amount0Out, s.amount0In) // > 0 means token0 is sent out
+	delta1 := new(big.Int).Sub(s.amount1Out, s.amount1In) // > 0 means token1 is sent out
+	return delta0.Sign() < 0 && delta1.Sign() > 0
 }
 
 // AmountIn returns the input amount for the swap.
 func (s *V2Swap) AmountIn() *big.Int {
-	if s.amount0In.Cmp(s.amount1In) > 0 {
-		return s.amount0In
+	delta0 := new(big.Int).Sub(s.amount0Out, s.amount0In)
+	delta1 := new(big.Int).Sub(s.amount1Out, s.amount1In)
+	if delta0.Sign() < 0 {
+		return new(big.Int).Abs(delta0)
+	} else {
+		return new(big.Int).Abs(delta1)
 	}
-	return s.amount1In
 }
 
 // AmountOut returns the output amount for the swap.
 func (s *V2Swap) AmountOut() *big.Int {
-	if s.amount0Out.Cmp(s.amount1Out) > 0 {
-		return s.amount0Out
+	delta0 := new(big.Int).Sub(s.amount0Out, s.amount0In)
+	delta1 := new(big.Int).Sub(s.amount1Out, s.amount1In)
+	if delta0.Sign() > 0 {
+		return delta0
 	}
-	return s.amount1Out
+	return delta1
 }
 
 // ParseSwap parses a Uniswap V2 swap log into a V2Swap struct.
