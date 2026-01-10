@@ -2,14 +2,16 @@
 package protocols
 
 import (
+	"math/big"
+
 	"github.com/48Club/bscexorcist/protocols/dodoswap"
 	"github.com/48Club/bscexorcist/protocols/fourmeme"
+	"github.com/48Club/bscexorcist/protocols/pancakev4"
 	"github.com/48Club/bscexorcist/protocols/uniswapv2"
 	"github.com/48Club/bscexorcist/protocols/uniswapv3"
 	"github.com/48Club/bscexorcist/protocols/uniswapv4"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 )
 
 // SwapEvent represents a DEX swap event with a unified interface for all supported protocols.
@@ -35,6 +37,10 @@ var (
 
 	// Uniswap V4 and compatible swap event signature
 	uniswapV4SwapSignature = common.HexToHash("0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f")
+
+	// PancakeSwap V4 swap event signature
+	// Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee, uint16 protocolFee)
+	pancakeV4SwapSignature = common.HexToHash("0x04206ad2b7c0f463bff3dd4f33c5735b0f2957a351e4f79763a4fa9e775dd237")
 
 	// DODOSwap signature for swap events
 	dodoSwapSignature = common.HexToHash("0xc2c0245e056d5fb095f04cd6373bc770802ebd1e6c918eb78fdef843cdb37b0f")
@@ -64,6 +70,8 @@ func ParseSwapEvents(logs []*types.Log) []SwapEvent {
 			swap = uniswapv3.ParseSwap(log)
 		} else if signature == uniswapV4SwapSignature {
 			swap = uniswapv4.ParseSwap(log)
+		} else if signature == pancakeV4SwapSignature {
+			swap = pancakev4.ParseSwap(log)
 		} else if signature == dodoSwapSignature {
 			swap = dodoswap.ParseSwap(log)
 		} else if fourMemeSwapSignatures[signature] {
