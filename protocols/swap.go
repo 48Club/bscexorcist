@@ -33,6 +33,7 @@ var (
 	uniswapV3SwapSignatures = map[common.Hash]bool{
 		common.HexToHash("0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67"): true,
 		common.HexToHash("0x19b47279256b2a23a1665c810c8d55a1758940ee09377d4f8d26497a3577dc83"): true,
+		common.HexToHash("0x121cb44ee54098b1a04743c487e7460d8dd429b27f88b1f4d4767396e1a59f79"): true,
 	}
 
 	// Uniswap V4 and compatible swap event signature
